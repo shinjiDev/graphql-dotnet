@@ -14,6 +14,8 @@ namespace GraphQL.Tests.Validation
 
         public string Query { get; set; }
 
+        public bool FailOnFirstError { get; set; } = false;
+
         public Inputs Inputs { get; set; }
 
         public IList<IValidationRule> Rules => _rules;

@@ -37,9 +37,9 @@ namespace GraphQL.Validation
 
         private static void VisitRecursive(INode node, State state)
         {
-            if (node != null)
+            if (node != null && (!state.Context.FailOnFirstError || !state.Context.HasErrors))
             {
-                for (int i = 0; i < state.Visitors.Count; ++i)
+                for (int i = 0; (i < state.Visitors.Count ) && (!state.Context.FailOnFirstError || !state.Context.HasErrors); ++i)
                     state.Visitors[i].Enter(node, state.Context);
 
                 node.Visit(_visitDelegate, state);

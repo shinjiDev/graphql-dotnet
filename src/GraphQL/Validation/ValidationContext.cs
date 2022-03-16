@@ -61,6 +61,8 @@ namespace GraphQL.Validation
         /// </summary>
         public bool HasErrors => _errors?.Count > 0;
 
+        public bool FailOnFirstError { get; set; } = false;
+
         /// <inheritdoc cref="ExecutionOptions.Inputs"/>
         public Inputs? Inputs { get; set; }
 
@@ -71,7 +73,8 @@ namespace GraphQL.Validation
         {
             if (error == null)
                 throw new ArgumentNullException(nameof(error), "Must provide a validation error.");
-            (_errors ??= new List<ValidationError>()).Add(error);
+            if (!FailOnFirstError || !HasErrors)
+                (_errors ??= new List<ValidationError>()).Add(error);
         }
 
         /// <summary>

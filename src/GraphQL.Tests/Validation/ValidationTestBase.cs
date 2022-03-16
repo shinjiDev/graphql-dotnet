@@ -31,13 +31,13 @@ namespace GraphQL.Tests.Validation
 
             config.Rules.Any().ShouldBeTrue("Must provide at least one rule to validate against.");
 
-            var result = Validate(config.Query, config.Schema ?? Schema, config.Rules, config.Inputs);
+            var result = Validate(config.Query, config.Schema ?? Schema, config.Rules, config.Inputs, config.FailOnFirstError);
 
             result.IsValid.ShouldBeFalse("Expected validation errors though there were none.");
             result.Errors.Count.ShouldBe(
                 config.Assertions.Count,
                 $"The number of errors found ({result.Errors.Count}) does not match the number of errors expected ({config.Assertions.Count}).");
-
+            Console.WriteLine(result.Errors.Count);
             for (int i = 0; i < config.Assertions.Count; i++)
             {
                 var assert = config.Assertions[i];
@@ -91,12 +91,12 @@ namespace GraphQL.Tests.Validation
             result.IsValid.ShouldBeTrue(message);
         }
 
-        private IValidationResult Validate(string query, ISchema schema, IEnumerable<IValidationRule> rules, Inputs inputs)
+        private IValidationResult Validate(string query, ISchema schema, IEnumerable<IValidationRule> rules, Inputs inputs, bool failOnFirstError = false)
         {
             var documentBuilder = new GraphQLDocumentBuilder();
             var document = documentBuilder.Build(query);
             var validator = new DocumentValidator();
-            return validator.ValidateAsync(schema, document, document.Operations.FirstOrDefault()?.Variables, rules, inputs: inputs).Result.validationResult;
+            return validator.ValidateAsync(schema, document, document.Operations.FirstOrDefault()?.Variables, rules, inputs: inputs, failOnFirstError: failOnFirstError).Result.validationResult;
         }
     }
 }
